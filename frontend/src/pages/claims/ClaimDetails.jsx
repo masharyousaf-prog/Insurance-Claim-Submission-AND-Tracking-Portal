@@ -108,11 +108,11 @@ const ClaimDetails = () => {
           <span className="text-gray-900">{claim.assignedOfficer?.name || 'Unassigned'}</span>
         </div>
 
-        {(user.role === 'admin' || user.role === 'officer') && !claim.assignedOfficer && (
+        {(user.role === 'officer') && !claim.assignedOfficer && (
            <Button variant="outline" className="bg-white text-sm py-1" onClick={handleSelfAssign}>Assign to Me</Button>
         )}
 
-        {(user.role === 'admin' || user.role === 'officer') && (
+        {(user.role === 'officer') && (
           <div className="ml-auto">
             <span className="text-sm font-semibold text-gray-700 block mb-1">Update Status:</span>
             <select 

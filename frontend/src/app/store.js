@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/auth/authSlice';
-import claimsReducer from '../features/claims/claimsSlice';
+// Corrected the import path to match your actual file structure
+import authReducer from '../features/authSlice'; 
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    claims: claimsReducer,
+    // Removed claimsReducer since claims are handled via local state (useState/Axios)
   },
 });

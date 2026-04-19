@@ -1,13 +1,19 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
-import DashboardLayout from './components/layout/DashboardLayout';
-import ProtectedRoute from './components/ProtectedRoute';
-import ClaimsList from './pages/claims/ClaimsList';
-import ClaimForm from './pages/claims/ClaimForm';
-import ClaimDetails from './pages/claims/ClaimDetails';
-import AdminDashboard from './pages/dashboard/AdminDashboard';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import DashboardLayout from "./components/layout/DashboardLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ClaimsList from "./pages/claims/ClaimsList";
+import ClaimForm from "./pages/claims/ClaimForm";
+import ClaimDetails from "./pages/claims/ClaimDetails";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import CreateOfficer from "./pages/dashboard/CreateOfficer";
 
 function App() {
   return (
@@ -17,30 +23,45 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Protected Application Routes */}
-        <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout />
+            </ProtectedRoute>
+          }
+        >
           {/* Default redirect based on role is handled inside DashboardLayout or we can default to list */}
           <Route index element={<ClaimsList />} />
-          
+
           {/* Claims Workflow */}
           <Route path="claims" element={<ClaimsList />} />
           <Route path="claims/:id" element={<ClaimDetails />} />
-          <Route 
-            path="claims/new" 
+          <Route
+            path="claims/new"
             element={
-              <ProtectedRoute allowedRoles={['policyholder']}>
+              <ProtectedRoute allowedRoles={["policyholder"]}>
                 <ClaimForm />
               </ProtectedRoute>
-            } 
+            }
           />
 
           {/* Admin Workflow */}
-          <Route 
-            path="dashboard" 
+          <Route
+            path="dashboard"
             element={
-              <ProtectedRoute allowedRoles={['admin']}>
+              <ProtectedRoute allowedRoles={["admin"]}>
                 <AdminDashboard />
               </ProtectedRoute>
-            } 
+            }
+          />
+          <Route
+            path="create-officer"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <CreateOfficer />
+              </ProtectedRoute>
+            }
           />
         </Route>
 

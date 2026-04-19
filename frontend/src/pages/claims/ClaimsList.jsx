@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import { useSelector } from 'react-redux';
 
 const ClaimsList = () => {
+  const { user } = useSelector((state) => state.auth);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -17,6 +19,8 @@ const ClaimsList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;
 
+  const [assignmentFilter, setAssignmentFilter] = useState('unassigned');
+
   const fetchClaims = useCallback(async () => {
     setLoading(true);
     try {
@@ -27,7 +31,8 @@ const ClaimsList = () => {
           type: typeFilter,
           sort,
           page: pageIndex + 1,
-          limit: pageSize
+          limit: pageSize,
+          assignment: assignmentFilter
         }
       });
       setData(res.data.data ? res.data.data : res.data);
@@ -37,12 +42,12 @@ const ClaimsList = () => {
     } finally {
       setLoading(false);
     }
-  }, [search, statusFilter, typeFilter, sort, pageIndex]);
+  }, [search, statusFilter, typeFilter, sort, pageIndex, assignmentFilter]);
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setPageIndex(0);
-  }, [search, statusFilter, typeFilter, sort]);
+  }, [search, statusFilter, typeFilter, sort, assignmentFilter]);;
 
   useEffect(() => {
     fetchClaims();
@@ -98,7 +103,31 @@ const ClaimsList = () => {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-800">Claims Queue</h2>
-      
+      {/* NEW: Officer Queue Toggles */}
+      {user?.role === 'officer' && (
+        <div className="flex gap-3 mb-2">
+          <button
+            onClick={() => setAssignmentFilter('unassigned')}
+            className={`px-5 py-2 rounded-md font-semibold text-sm transition-all ${
+              assignmentFilter === 'unassigned' 
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            Unassigned Queue
+          </button>
+          <button
+            onClick={() => setAssignmentFilter('mine')}
+            className={`px-5 py-2 rounded-md font-semibold text-sm transition-all ${
+              assignmentFilter === 'mine' 
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            My Cases
+          </button>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded shadow-sm">
         <input 
           type="text" 
@@ -129,11 +158,11 @@ const ClaimsList = () => {
         </select>
       </div>
 
-      <div className="bg-white rounded shadow-sm overflow-x-auto">
+      <div className="bg-white rounded shadow-sm w-full max-w-[100vw] md:max-w-none overflow-x-auto border border-gray-100">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Loading claims...</div>
         ) : (
-          <table className="min-w-full text-sm text-left">
+          <table className="min-w-full text-sm text-left whitespace-nowrap md:whitespace-normal">
             <thead className="bg-gray-50 text-gray-700 border-b">
               {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>
